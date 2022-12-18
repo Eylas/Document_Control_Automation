@@ -2,12 +2,9 @@ import pdfplumber
 import time
 import re
 import os
-from multiprocessing.dummy import Pool as ThreadPool
-import multiprocessing
 import concurrent.futures
 import json
 
-start = time.time()
 path = r'C:\Users\Natha\Document_Control_Automation\loading_area'
 
 #regex patterns
@@ -28,7 +25,6 @@ def get_basename(path):
     file_name = os.path.basename(path)
     return file_name
 
-
 def counter(list):
     count = 0
     for index, file in enumerate(list):
@@ -46,41 +42,47 @@ def pdf_mapper(file):
             "Document_Revision":[]}
             
             print(f"Currently working on {get_basename(file)}")
-            bottom = page.crop((0, 0.85 *float(page.height), page.width, page.height))
-            # fix bottom_right - causing a persistent error when used
-            # bottom_right = bottom.crop((0.75 * float(bottom.width), 0, bottom.width, bottom.height), relative=True)
-            page_text = bottom.extract_text(layout=True)
+            bottom_right = page.crop((0.85 *float(page.width), 0.85 *float(page.height), page.width, page.height))
+
+            page_text = bottom_right.extract_text(layout=True)
+            print(page_text)
 
             dwg_num = dwg_pattern.search(page_text)
             rev_num = rev_pattern.search(page_text)
             page_num = page.page_number
 
-            # review loop to find out why the json output isnt including all 
             file_dict["Originating_Document"] = get_basename(file)
             file_dict["Originating_Page"] = page_num
             file_dict["Document_Number"] = dwg_num.group(0)
             file_dict["Document_Revision"] = rev_num.group(0)
-            print(file_dict)
             file_matches.append(file_dict)
 
             page.flush_cache()
             page.get_text_layout.cache_clear()
-    with open('report_outputfile.json', 'w') as fout:
-        json.dump(file_matches, fout, indent=4)
+
     return file_matches
-                
+
+def report_output(input, name):
+    with open(f'{name}.json', 'w') as fout:
+        json.dump(input, fout, indent=4)
+    return input 
     
 # Function executions
 
 file_list = get_file_paths(path)
-print(f'The number of files to scan is:  {counter(file_list)}\n')
 
+for file in file_list:
+    pdf_mapper(file)
 
-if __name__ == "__main__":
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        start_time = time.perf_counter()
-        result = list(executor.map(pdf_mapper, file_list))
-        finish_time = time.perf_counter()
-        with open('report_out.json', 'w') as fout:
-            json.dump(result, fout, indent=4)
-        print(f"Program finishIed in {finish_time-start_time} seconds")
+# if __name__ == "__main__":
+
+#     start_time = time.perf_counter()
+#     result = {}
+  
+#     with concurrent.futures.ProcessPoolExecutor(4) as executor:
+#         result = list(executor.map(pdf_mapper, file_list))
+        
+#         report_output(result,'report_output')
+#         finish_time = time.perf_counter()
+
+#     print(f"Program finishIed in {finish_time-start_time} seconds")
