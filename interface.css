@@ -3,24 +3,34 @@
 }
 
 Screen {
-    overflow-y: scroll;
+    layers: base overlay;
+    overflow: hidden;
+    background: $background;
+}
+
+Screen>Container {
+    height: 100%;
+    overflow: hidden;
 }
 
 .box {
-    height: 100%;
+    height: 10%;
     border: solid #e4c040;
+
 }
 
 Header {
     background: #e4c040;
     height: 10%;
+    color: black;
+    text-style: bold;
 }
 
 Sidebar {
-    width: 40;
-    background: grey;
-    transition: offset 500ms in_out_cubic;
+    width: 30;
+    background: #e4c040;
     layer: overlay;
+    transition: offset 500ms in_out_cubic;
 }
 
 Sidebar:focus-within {
@@ -32,16 +42,53 @@ Sidebar.-hidden {
 }
 
 Sidebar Title {
-    background: white;
-    color: #e4c040;
-    padding: 2 4;
-    border-right: vkey green;
+    background: #e4c040;
+    color: black;
+    border-right: vkey grey;
     dock: top;
     text-align: center;
+    content-align: center middle;
     text-style: bold;
+    height: 10%;
+}
+
+
+.SidebarLinks {
+    link-color: white;
+    link-style: none;
+    link-hover-color: black;
+    link-hover-background: #e4c040;
+    link-hover-style: bold;
+    border-right: vkey grey;
+}
+
+OptionGroup {
+    background: $background;
+    color: white;
+    height: 1fr;
+    border-right: vkey grey;
+
+
 }
 
 Footer {
     background: #e4c040;
-    height: 5%;
+    color: $text;
+    dock: bottom;
+    height: 1;
+    layout: vertical;
+}
+
+Footer>.footer--highlight {
+    background: grey;
+}
+
+Footer>.footer--highlight-key {
+    background: grey;
+    text-style: bold;
+}
+
+Footer>.footer--key {
+    text-style: bold;
+    background: grey;
 }
