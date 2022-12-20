@@ -8,11 +8,12 @@ import threading
 
 path = r'C:\Users\Natha\Document_Control_Automation\loading_area'
 
-#regex patterns
+# regex patterns
 dwg_pattern = re.compile(r'\w\d\d\d.\w\w\w.\w\w.\w\w\w.\d\d\d.\d\d\d\d\d\d')
-rev_pattern = re.compile(r'P\d\d') 
+rev_pattern = re.compile(r'P\d\d')
 
 # Functions
+
 
 def get_file_paths(dir):
     file_list = []
@@ -22,19 +23,24 @@ def get_file_paths(dir):
             file_list.append(full_path)
     return file_list
 
+
 def get_basename(path):
     file_name = os.path.basename(path)
     return file_name
 
+
 def drawing_crop_selector():
 
-    options = ['Bottom', 'Bottom left', 'Bottom right', 'Top', 'Top right', 'Top left']
+    options = [
+        'Bottom', 'Bottom left', 'Bottom right', 'Top', 'Top right', 'Top left'
+    ]
+
     user_input = ""
     input_message = "Please select crop area to localise the data you want to extract:\n"
 
     for index, item in enumerate(options):
         input_message += f"{index+1}) {item}\n"
-    
+
     input_message += "Your selection: "
 
     while user_input.capitalize() not in options:
@@ -42,6 +48,7 @@ def drawing_crop_selector():
     print("You selected: " + user_input)
     return user_input
 
+
 def get_file_paths(dir):
     file_list = []
     for path in os.listdir(dir):
@@ -50,45 +57,54 @@ def get_file_paths(dir):
             file_list.append(full_path)
     return file_list
 
+
 def get_basename(path):
     file_name = os.path.basename(path)
     return file_name
 
+
 def pdf_mapper(file):
     file_matches = []
-    
+    selection = drawing_crop_selector()
     with pdfplumber.open(file) as pdf:
 
-        
         for page in pdf.pages:
-            
-            file_dict = {"Originating_Document":[], 
-            "Originating_Page":[], 
-            "Document_Number":[], 
-            "Document_Revision":[]}
-            
+            print(f"Currently working on {get_basename(file)}\n")
+
+            file_dict = {
+                "Originating_Document": [],
+                "Originating_Page": [],
+                "Document_Number": [],
+                "Document_Revision": []
+            }
+
             def pdf_cropper(selection):
                 match selection:
                     case "Bottom":
-                        bottom_selected = page.crop((0, 0.85 *float(page.height), page.width, page.height))
+                        bottom_selected = page.crop(
+                            (0, 0.85 * float(page.height), page.width, page.height))
                         return bottom_selected
                     case "Bottom right":
-                        bottom_right_selected = page.crop((0.85 *float(page.width), 0.85 *float(page.height), page.width, page.height))
+                        bottom_right_selected = page.crop(
+                            (0.85 * float(page.width), 0.85 * float(page.height), page.width, page.height))
                         return bottom_right_selected
                     case "Bottom left":
-                        bottom_left_selected = page.crop((0, 0.85 *float(page.height), 0.15 *float(page.width), page.height))
+                        bottom_left_selected = page.crop(
+                            (0, 0.85 * float(page.height), 0.15 * float(page.width), page.height))
                         return bottom_left_selected
                     case "Top":
-                        top_selected = page.crop((0, 0., page.width, 0.15 *float(page.height)))
+                        top_selected = page.crop(
+                            (0, 0., page.width, 0.15 * float(page.height)))
                         return top_selected
                     case "Top right":
-                        top_right_selected = page.crop((0.85 *float(page.width), 0, page.width, 0.15 *float(page.height)))    
+                        top_right_selected = page.crop(
+                            (0.85 * float(page.width), 0, page.width, 0.15 * float(page.height)))
                         return top_right_selected
                     case "Top left":
-                        top_left_selected = page.crop((0, 0, 0.15 *float(page.width), 0.15 *float(page.height)))        
+                        top_left_selected = page.crop(
+                            (0, 0, 0.15 * float(page.width), 0.15 * float(page.height)))
                         return top_left_selected
 
-            print(f"Currently working on {get_basename(file)}")
             cropping = pdf_cropper(selection)
             page_text = cropping.extract_text(layout=True)
             print(page_text)
@@ -108,24 +124,28 @@ def pdf_mapper(file):
 
     return file_matches
 
-def report_output(input, name):
+
+def report_output(data, name):
     with open(f'{name}.json', 'w') as fout:
-        json.dump(input, fout, indent=4)
-    return input
+        json.dump(data, fout, indent=4)
+    return data
+
 
 # Function executions
+file_list = get_file_paths(path)
+for file in file_list:
+    pdf_mapper(file)
 
 # if __name__ == "__main__":
 #     file_list = get_file_paths(path)
-#     selection = drawing_crop_selector()
-#     concurrent_variable_modification(selection)
 #     start_time = time.perf_counter()
+
 #     result = {}
-  
+#     selection = drawing_crop_selector()
 #     with concurrent.futures.ProcessPoolExecutor(4) as executor:
 #         result = list(executor.map(pdf_mapper, file_list))
-        
-#         report_output(result,'report_output')
+
+#         report_output(result, 'report_output')
 #         finish_time = time.perf_counter()
 
 #     print(f"Program finishIed in {finish_time-start_time} seconds")

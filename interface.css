@@ -1,0 +1,47 @@
+* {
+    transition: background 500ms in_out_cubic, color 500ms in_out_cubic;
+}
+
+Screen {
+    overflow-y: scroll;
+}
+
+.box {
+    height: 100%;
+    border: solid #e4c040;
+}
+
+Header {
+    background: #e4c040;
+    height: 10%;
+}
+
+Sidebar {
+    width: 40;
+    background: grey;
+    transition: offset 500ms in_out_cubic;
+    layer: overlay;
+}
+
+Sidebar:focus-within {
+    offset: 0 0 !important;
+}
+
+Sidebar.-hidden {
+    offset-x: -100%;
+}
+
+Sidebar Title {
+    background: white;
+    color: #e4c040;
+    padding: 2 4;
+    border-right: vkey green;
+    dock: top;
+    text-align: center;
+    text-style: bold;
+}
+
+Footer {
+    background: #e4c040;
+    height: 5%;
+}
