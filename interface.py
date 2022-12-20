@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tkinter as tk
 from importlib_metadata import version
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from rich.text import Text
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import reactive, watch
 from textual.widgets import (
     Button,
@@ -28,35 +29,32 @@ from textual.widgets import (
 )
 
 
-MESSAGE = "TEST"
+MESSAGE = """
 
-EXAMPLE_CSS = """\
-Screen {
-    layers: base overlay notes;
-    overflow: hidden;
-}
-Sidebar {
-    width: 40;
-    background: $panel;
-    transition: offset 500ms in_out_cubic;
-    layer: overlay;
-}
-Sidebar.-hidden {
-    offset-x: -100%;
-}"""
+ASTRAEA is a suite of information management tools in development by Nodehex.
+
+We are developing a series of free open source solutions to automate tasks, drive efficiency and leverage data in an effective manner within the Architecture, Engineering and Construction industry.
+
+This tool will extract data from PDFs and provide a csv report output, requring less manual work from your information management teams.
+
+You can find us on any of the links below. 
+
+"""
+LINK_GITHUB = """
+    [@click="app.open_link('https://github.com/Eylas/')"]GITHUB[/]
+    """
+LINK_NODEHEX = """
+    [@click="app.open_link('https://nodehex.com/')"]NODEHEX[/]
+    """
 
 
 class Sidebar(Container):
 
     def compose(self) -> ComposeResult:
-        yield Title("")
-        yield OptionGroup(Message(MESSAGE), Version())
-        yield DarkSwitch()
-
-
-class Version(Static):
-    def render(self) -> RenderableType:
-        return f"[b]v{version('textual')}"
+        yield Title("about ASTRAEA")
+        yield OptionGroup(Message(MESSAGE))
+        yield Static(LINK_GITHUB, classes="SidebarLinks")
+        yield Static(LINK_NODEHEX, classes="SidebarLinks")
 
 
 class Title(Static):
@@ -71,36 +69,6 @@ class Message(Static):
     pass
 
 
-class DarkSwitch(Horizontal):
-    def compose(self) -> ComposeResult:
-        yield Checkbox(value=self.app.dark)
-        yield Static("Dark mode toggle", classes="label")
-
-    def on_mount(self) -> None:
-        watch(self.app, "dark", self.on_dark_change, init=False)
-
-    def on_dark_change(self, dark: bool) -> None:
-        self.query_one(Checkbox).value = self.app.dark
-
-    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        self.app.dark = event.value
-
-
-def action_toggle_dark(self) -> None:
-    self.dark = not self.dark
-
-
-def action_toggle_sidebar(self) -> None:
-    sidebar = self.query_one(Sidebar)
-    self.set_focus(None)
-    if sidebar.has_class("-hidden"):
-        sidebar.remove_class("-hidden")
-    else:
-        if sidebar.query("*:focus"):
-            self.screen.set_focus(None)
-        sidebar.add_class("-hidden")
-
-
 def test():
     pass
 
@@ -108,22 +76,39 @@ def test():
 class InterfaceApp(App):
 
     CSS_PATH = "interface.css"
-    TITLE = "Nodehex PDF Quality Tool"
+    TITLE = "ASTRAEA"
     BINDINGS = [
-        ("ctrl+b", "action_toggle_sidebar", "Sidebar"),
+        ("ctrl+b", "toggle_sidebar", "Sidebar"),
+        ("ctrl+d", "toggle_dark", "Dark mode",),
         Binding("ctrl+c,ctrl+q", "app.quit", "Quit", show=True)
     ]
 
-    show_sidebar = reactive(True)
+    show_sidebar = reactive(False)
 
     def compose(self) -> ComposeResult:
-        example_css = "\n".join(
-            Path(self.css_path[0]).read_text().splitlines()[:50])
         yield Container(
             Sidebar(classes="-hidden"),
             Header(show_clock=False),
-            Footer()
         )
+        yield Footer()
+
+    def action_open_link(self, link: str) -> None:
+        self.app.bell()
+        import webbrowser
+        webbrowser.open(link)
+
+    def action_toggle_sidebar(self) -> None:
+        sidebar = self.query_one(Sidebar)
+        self.set_focus(None)
+        if sidebar.has_class("-hidden"):
+            sidebar.remove_class("-hidden")
+        else:
+            if sidebar.query("*:focus"):
+                self.screen.set_focus(None)
+            sidebar.add_class("-hidden")
+
+    def action_toggle_dark(self) -> None:
+        self.dark = not self.dark
 
 
 if __name__ == "__main__":

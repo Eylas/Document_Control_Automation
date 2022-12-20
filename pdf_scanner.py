@@ -5,6 +5,10 @@ import os
 import concurrent.futures
 import json
 import threading
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
+
 
 path = r'C:\Users\Natha\Document_Control_Automation\loading_area'
 
@@ -28,6 +32,11 @@ def get_basename(path):
     file_name = os.path.basename(path)
     return file_name
 
+
+def askdirectory():
+    dirname = filedialog.askdirectory()
+    print(dirname)
+    return (dirname)
 
 def drawing_crop_selector():
 
