@@ -4,22 +4,17 @@
 
 Screen {
     background: $background;
+    layers: base overlay;
 }
 
 Screen>Container {
     height: 100%;
 }
 
-Options {
-    layout: grid;
-    grid-size: 2;
-    height: 30%;
-    width: 20%;
-}
-
 #options {
     column-span: 1;
     row-span: 1;
+    layer: base;
 }
 
 #report {
@@ -34,12 +29,9 @@ Options {
 
 /* TextLog elements */
 
-TextLog {
-    width: 30%;
-    height: 30%;
-    dock: right;
-    margin-top: 2;
-}
+/* TextLog {
+
+} */
 
 /* Header elements */
 
@@ -49,6 +41,70 @@ Header {
     color: black;
     text-style: bold;
 }
+
+/* App Layout */
+
+#app-grid {
+    layout: grid;
+    grid-size: 5 4;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+    border: red;
+}
+
+#left-pane>Static {
+    background: $boost;
+    color: auto;
+    margin-bottom: 1;
+    padding: 1;
+}
+
+#left-pane {
+    height: 100%;
+    row-span: 4;
+    column-span: 1;
+    background: $panel;
+    border: dodgerblue;
+}
+
+#top-right {
+    height: 100%;
+    background: $panel;
+    column-span: 4;
+    row-span: 1;
+    border: mediumvioletred;
+}
+
+#top-right>Static {
+    width: auto;
+    height: 100%;
+    margin-right: 1;
+    background: $boost;
+}
+
+#bottom-right {
+    height: 100%;
+    layout: grid;
+    grid-size: 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+    grid-gutter: 1;
+    background: $panel;
+    border: greenyellow;
+    row-span: 3;
+    column-span: 4;
+}
+
+#bottom-right-final {
+    column-span: 3;
+
+}
+
+#bottom-right>Static {
+    height: 100%;
+    background: $boost;
+}
+
 
 /* Sidebar elements */
 
@@ -77,7 +133,6 @@ Sidebar Title {
     text-style: bold;
     height: 10%;
 }
-
 
 .SidebarLinks {
     link-color: black;
