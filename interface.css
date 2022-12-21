@@ -1,23 +1,47 @@
 * {
-    transition: background 500ms in_out_cubic, color 500ms in_out_cubic;
+    transition: background 1000ms in_out_cubic, color 500ms in_out_cubic;
 }
 
 Screen {
-    layers: base overlay;
-    overflow: hidden;
     background: $background;
 }
 
 Screen>Container {
     height: 100%;
-    overflow: hidden;
 }
 
-.box {
-    height: 10%;
-    border: solid #e4c040;
-
+Options {
+    layout: grid;
+    grid-size: 2;
+    height: 30%;
+    width: 20%;
 }
+
+#options {
+    column-span: 1;
+    row-span: 1;
+}
+
+#report {
+    row-span: 1;
+    column-span: 3;
+}
+
+.bodyBox {
+    height: 100%;
+    border: solid green;
+}
+
+/* TextLog elements */
+
+TextLog {
+    width: 30%;
+    height: 30%;
+    dock: right;
+    margin-top: 2;
+}
+
+/* Header elements */
 
 Header {
     background: #e4c040;
@@ -25,6 +49,8 @@ Header {
     color: black;
     text-style: bold;
 }
+
+/* Sidebar elements */
 
 Sidebar {
     width: 30;
@@ -54,12 +80,13 @@ Sidebar Title {
 
 
 .SidebarLinks {
-    link-color: white;
+    link-color: black;
     link-style: none;
-    link-hover-color: black;
+    link-hover-color: grey;
     link-hover-background: #e4c040;
     link-hover-style: bold;
     border-right: vkey grey;
+    text-style: bold;
 }
 
 OptionGroup {
@@ -67,9 +94,11 @@ OptionGroup {
     color: white;
     height: 1fr;
     border-right: vkey grey;
-
-
+    padding: 1;
 }
+
+
+/* Footer elements */
 
 Footer {
     background: #e4c040;
