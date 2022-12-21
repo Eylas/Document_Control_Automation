@@ -4,6 +4,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 
+import time
+
 from importlib_metadata import version
 from pathlib import Path
 
@@ -15,6 +17,7 @@ from rich.pretty import Pretty
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
+from rich.progress import track, Progress, BarColumn
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -36,6 +39,16 @@ from textual.widgets import (
 
 # Text blocks
 
+WELCOME_MD = """
+Hey and welcome!
+
+I developed this app with the aim of improving efficiency and saving time.
+
+I hope it serves you will and if you have any questions - you can find me on the
+
+"""
+Welcome_var = Markdown(WELCOME_MD)
+
 MESSAGE = """
 
 ASTRAEA is a suite of information management tools in development by Nodehex.
@@ -54,6 +67,7 @@ LINK_NODEHEX = """
     [@click="app.open_link('https://nodehex.com/')"]NODEHEX[/]
     """
 
+
 # Container elements
 
 
@@ -66,20 +80,38 @@ class Sidebar(Container):
         yield Static(LINK_NODEHEX, classes="SidebarLinks")
 
 
-class Options(Static):
+class Options(Container):
 
     def compose(self) -> ComposeResult:
-        yield Label("Select folder to review", classes="btnLabels")
         yield Button("Folder Location", id="event.button.folders")
-        yield Label("Metadata to extract")
         yield Button("Select", id="event.button.metadata")
 
+
+class Progress(Container):
+    def compose(self) -> ComposeResult:
+        yield Static("Tracker", classes="trackers")
+        yield Static("Tracker", classes="trackers")
+
+
+class Metrics(Container):
+
+    def compose(self) -> ComposeResult:
+        yield Static("Number of files to process")
+        yield Static("Someotherstuff")
+
+
+class SavedTime(Container):
+
+    def compose(self) -> ComposeResult:
+        yield Static("Time", classes="trackers")
+        yield Static("Time", classes="trackers")
 
 # Button elements
 
 
 class OptionGroup(Container):
     pass
+
 
 # Text elements
 
@@ -95,7 +127,7 @@ class Title(Static):
 
 
 class Note_prefix(Static):
-    prefix = "NDX_Astrea: "
+    prefix = "[#e3c404]NDX_Astraea:[/#e3c404] "
 
 
 def askdirectory():
@@ -104,6 +136,8 @@ def askdirectory():
     return dirname
 
 # Data Table
+
+# Progress bars
 
 # App
 
@@ -120,10 +154,8 @@ class InterfaceApp(App):
 
     show_sidebar = reactive(False)
 
-    def add_note(self, renderable: RenderableType) -> None:
+    def add_note(self, renderable) -> None:
         self.query_one(TextLog).write(renderable)
-
-        # Add textLog wrap
 
     def compose(self) -> ComposeResult:
         yield Container(
@@ -132,23 +164,18 @@ class InterfaceApp(App):
             Container(
                 Vertical(
                     Title("Options"),
-                    Options(),
+                    Options(id="options"),
                     id="left-pane",
                 ),
-                Horizontal(
-                    Static("Horizontally"),
-                    Static("Positioned"),
-                    Static("Children"),
-                    Static("Here"),
+                Container(
+                    Metrics(),
+                    Progress(),
+                    SavedTime(),
                     id="top",
                 ),
-                Container(
-                    TextLog(highlight=True, wrap=True),
-                    Static("Widget"),
-                    Static("Widget"),
-                    DataTable(id="bottom-right-final"),
-                    id="bottom-right",
-                ),
+                TextLog(highlight=True, markup=True,
+                        wrap=True),
+                DataTable(),
                 id="app-grid",
             ),
         )
@@ -187,7 +214,9 @@ class InterfaceApp(App):
 
     def on_mount(self) -> None:
         self.add_note(
-            f"{Note_prefix.prefix}Welcome.")
+            f"{Note_prefix.prefix} Hey and welcome! Please refer to the documentation on how to use the application.\n")
+        self.add_note(
+            f"{Note_prefix.prefix}If you have any queries, please feel free to reach out to me if they're not covered in the documentation.\n")
         table = self.query_one(DataTable)
         table.add_column("Foo", width=20)
         table.add_column("Bar", width=20)
