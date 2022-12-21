@@ -2,7 +2,11 @@
     transition: background 1000ms in_out_cubic, color 500ms in_out_cubic;
 }
 
-
+Title {
+    text-align: center;
+    content-align: center middle;
+    border: round grey;
+}
 
 Screen {
     background: $background;
@@ -21,7 +25,9 @@ TextLog {
     scrollbar-color: #e4c040;
     scrollbar-background: grey;
     scrollbar-color-active: grey;
-    overflow-x: hidden;
+    width: 100%;
+    column-span: 6;
+    row-span: 2;
 }
 
 /* Header elements */
@@ -37,76 +43,123 @@ Header {
 
 #app-grid {
     layout: grid;
-    grid-size: 5 4;
+    grid-size: 8 12;
     grid-columns: 1fr;
     grid-rows: 1fr;
-    /* border: ; */
     scrollbar-color:
 }
 
-#left-pane>Static {
-    background: $boost;
-    color: auto;
-    margin-bottom: 1;
-    padding: 1;
-
-}
+/* Left Panel */
 
 #left-pane {
+    layout: vertical;
     height: 100%;
-    row-span: 4;
-    column-span: 1;
+    row-span: 12;
+    column-span: 2;
     background: $panel;
     border: grey;
+    overflow: hidden;
+
 }
+
+#options {
+    layout: vertical;
+    height: 100%;
+    border: #e4c040;
+    background: $boost;
+    column-span: 2;
+    row-span: 2;
+    content-align: center middle;
+}
+
+#options>Button {
+    border: white;
+    content-align: center middle;
+    text-align: center;
+}
+
+
+/* Top */
 
 #top {
-    height: 100%;
-    background: $panel;
-    column-span: 4;
-    row-span: 1;
-    border: grey;
-}
-
-#top>Static {
-    width: auto;
-    height: 100%;
-    margin-right: 1;
-    background: $boost;
-}
-
-#bottom-right {
-    height: 100%;
     layout: grid;
-    grid-size: 3;
+    height: 100%;
+    grid-size: 6 2;
     grid-columns: 1fr;
     grid-rows: 1fr;
     grid-gutter: 1;
     background: $panel;
+    column-span: 12;
+    row-span: 6;
     border: grey;
-    row-span: 3;
-    column-span: 4;
 }
 
-#bottom-right-final {
-    column-span: 3;
+/* Metrics */
 
-}
-
-#bottom-right>Static {
+Metrics {
+    layout: vertical;
     height: 100%;
+    border: #e4c040;
     background: $boost;
+    column-span: 2;
+    row-span: 2;
+}
+
+
+Metrics>Static {
+    height: 50%;
+    text-align: center;
+    content-align: center middle;
+}
+
+/* Progress */
+
+Progress {
+    layout: vertical;
+    height: 100%;
+    border: #e4c040;
+    background: $boost;
+    column-span: 2;
+    row-span: 2;
+
+}
+
+Progress>Static {
+    height: 50%;
+    text-align: center;
+    content-align: center middle;
+}
+
+/* Saved Time */
+
+SavedTime {
+    layout: vertical;
+    height: 100%;
+    border: #e4c040;
+    background: $boost;
+    width: 100%;
+    column-span: 3;
+    row-span: 2;
+}
+
+
+SavedTime>Static {
+    height: 50%;
+    text-align: center;
+    content-align: center middle;
 }
 
 /* DataTable */
 
 DataTable {
-    background: $surface ;
+    background: $surface;
     color: $text;
     scrollbar-color: #e4c040;
     scrollbar-background: grey;
     scrollbar-color-active: grey;
-
+    width: 100%;
+    column-span: 10;
+    row-span: 4;
 }
 
 DataTable>.datatable--header {
@@ -146,6 +199,7 @@ Sidebar {
     background: #e4c040;
     layer: overlay;
     transition: offset 500ms in_out_cubic;
+
 }
 
 Sidebar:focus-within {
