@@ -2,36 +2,27 @@
     transition: background 1000ms in_out_cubic, color 500ms in_out_cubic;
 }
 
+
+
 Screen {
     background: $background;
     layers: base overlay;
+    height: 100%;
 }
 
 Screen>Container {
     height: 100%;
-}
-
-#options {
-    column-span: 1;
-    row-span: 1;
-    layer: base;
-}
-
-#report {
-    row-span: 1;
-    column-span: 3;
-}
-
-.bodyBox {
-    height: 100%;
-    border: solid green;
+    overflow-y: hidden;
 }
 
 /* TextLog elements */
 
-/* TextLog {
-
-} */
+TextLog {
+    scrollbar-color: #e4c040;
+    scrollbar-background: grey;
+    scrollbar-color-active: grey;
+    overflow-x: hidden;
+}
 
 /* Header elements */
 
@@ -49,7 +40,8 @@ Header {
     grid-size: 5 4;
     grid-columns: 1fr;
     grid-rows: 1fr;
-    border: red;
+    /* border: ; */
+    scrollbar-color:
 }
 
 #left-pane>Static {
@@ -57,6 +49,7 @@ Header {
     color: auto;
     margin-bottom: 1;
     padding: 1;
+
 }
 
 #left-pane {
@@ -64,18 +57,18 @@ Header {
     row-span: 4;
     column-span: 1;
     background: $panel;
-    border: dodgerblue;
+    border: grey;
 }
 
-#top-right {
+#top {
     height: 100%;
     background: $panel;
     column-span: 4;
     row-span: 1;
-    border: mediumvioletred;
+    border: grey;
 }
 
-#top-right>Static {
+#top>Static {
     width: auto;
     height: 100%;
     margin-right: 1;
@@ -90,7 +83,7 @@ Header {
     grid-rows: 1fr;
     grid-gutter: 1;
     background: $panel;
-    border: greenyellow;
+    border: grey;
     row-span: 3;
     column-span: 4;
 }
@@ -105,6 +98,46 @@ Header {
     background: $boost;
 }
 
+/* DataTable */
+
+DataTable {
+    background: $surface ;
+    color: $text;
+    scrollbar-color: #e4c040;
+    scrollbar-background: grey;
+    scrollbar-color-active: grey;
+
+}
+
+DataTable>.datatable--header {
+    text-style: bold;
+    background: #e4c040;
+    color: $text;
+
+}
+
+DataTable>.datatable--fixed {
+    text-style: bold;
+    background: $primary;
+    color: $text;
+}
+
+DataTable>.datatable--odd-row {
+    background: black;
+}
+
+DataTable>.datatable--even-row {
+    background: black;
+}
+
+DataTable>.datatable--cursor {
+    background: grey;
+    color: $text;
+}
+
+DataTable>.datatable--highlight {
+    background: #e4c040 20%;
+}
 
 /* Sidebar elements */
 

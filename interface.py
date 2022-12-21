@@ -32,6 +32,8 @@ from textual.widgets import (
     Label,
 )
 
+# Data Table
+
 # Text blocks
 
 MESSAGE = """
@@ -69,8 +71,9 @@ class Options(Static):
     def compose(self) -> ComposeResult:
         yield Label("Select folder to review", classes="btnLabels")
         yield Button("Folder Location", id="event.button.folders")
-        yield Label("Number of values to extract")
-        yield Button("Select", classes="btnLabels")
+        yield Label("Metadata to extract")
+        yield Button("Select", id="event.button.metadata")
+
 
 # Button elements
 
@@ -91,10 +94,16 @@ class Title(Static):
 # Actions
 
 
+class Note_prefix(Static):
+    prefix = "NDX_Astrea: "
+
+
 def askdirectory():
     dirname = filedialog.askdirectory()
     (f"Folder selected: {dirname}")
     return dirname
+
+# Data Table
 
 # App
 
@@ -113,6 +122,7 @@ class InterfaceApp(App):
 
     def add_note(self, renderable: RenderableType) -> None:
         self.query_one(TextLog).write(renderable)
+
         # Add textLog wrap
 
     def compose(self) -> ComposeResult:
@@ -130,13 +140,13 @@ class InterfaceApp(App):
                     Static("Positioned"),
                     Static("Children"),
                     Static("Here"),
-                    id="top-right",
+                    id="top",
                 ),
                 Container(
-                    TextLog(),
+                    TextLog(highlight=True, wrap=True),
                     Static("Widget"),
                     Static("Widget"),
-                    Static("Data table", id="bottom-right-final"),
+                    DataTable(id="bottom-right-final"),
                     id="bottom-right",
                 ),
                 id="app-grid",
@@ -163,13 +173,31 @@ class InterfaceApp(App):
         self.dark = not self.dark
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        output = askdirectory()
-        self.app.add_note(f"Folder selected: {output}")
-        self.app.add_note(f"Type is {type(output)}")
-        return output
+
+        if event.button.id == "event.button.folders":
+            output = askdirectory()
+            self.app.add_note(f"Folder selected: {output}")
+            self.app.add_note(f"Type is {type(output)}")
+            return output
+        elif event.button.id == "event.button.metadata":
+            self.app.add_note(f"{Note_prefix.prefix}metadata")
+        else:
+            self.app.add_note("Error")
+            self.app.add_note(f"{Note_prefix.prefix}")
 
     def on_mount(self) -> None:
-        self.add_note("NDX_Astraea: Welcome.")
+        self.add_note(
+            f"{Note_prefix.prefix}Welcome.")
+        table = self.query_one(DataTable)
+        table.add_column("Foo", width=20)
+        table.add_column("Bar", width=20)
+        table.add_column("Baz", width=20)
+        table.add_column("Foo", width=20)
+        table.add_column("Bar", width=20)
+        table.add_column("Baz", width=20)
+        table.zebra_stripes = True
+        for n in range(20):
+            table.add_row(*[f"Cell ([b]{n}[/b], {col})" for col in range(6)])
 
 
 if __name__ == "__main__":
