@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-import tkinter as tk
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
+
 from importlib_metadata import version
 from pathlib import Path
 
@@ -26,8 +29,10 @@ from textual.widgets import (
     Input,
     Static,
     TextLog,
+    Label,
 )
 
+# Text blocks
 
 MESSAGE = """
 
@@ -47,6 +52,8 @@ LINK_NODEHEX = """
     [@click="app.open_link('https://nodehex.com/')"]NODEHEX[/]
     """
 
+# Container elements
+
 
 class Sidebar(Container):
 
@@ -57,20 +64,39 @@ class Sidebar(Container):
         yield Static(LINK_NODEHEX, classes="SidebarLinks")
 
 
-class Title(Static):
-    pass
+class Options(Static):
+
+    def compose(self) -> ComposeResult:
+        yield Label("Select folder to review", classes="btnLabels")
+        yield Button("Folder Location", id="event.button.folders")
+        yield Label("Number of values to extract")
+        yield Button("Select", classes="btnLabels")
+
+# Button elements
 
 
 class OptionGroup(Container):
     pass
+
+# Text elements
 
 
 class Message(Static):
     pass
 
 
-def test():
+class Title(Static):
     pass
+
+# Actions
+
+
+def askdirectory():
+    dirname = filedialog.askdirectory()
+    (f"Folder selected: {dirname}")
+    return dirname
+
+# App
 
 
 class InterfaceApp(App):
@@ -85,10 +111,15 @@ class InterfaceApp(App):
 
     show_sidebar = reactive(False)
 
+    def add_note(self, renderable: RenderableType) -> None:
+        self.query_one(TextLog).write(renderable)
+
     def compose(self) -> ComposeResult:
         yield Container(
             Sidebar(classes="-hidden"),
             Header(show_clock=False),
+            Options(),
+            TextLog()
         )
         yield Footer()
 
@@ -109,6 +140,12 @@ class InterfaceApp(App):
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        output = askdirectory()
+        self.app.add_note(f"Folder selected: {output}")
+        self.app.add_note(f"Type is {type(output)}")
+        return output
 
 
 if __name__ == "__main__":

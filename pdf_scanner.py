@@ -35,7 +35,6 @@ def get_basename(path):
 
 def askdirectory():
     dirname = filedialog.askdirectory()
-    print(dirname)
     return (dirname)
 
 def drawing_crop_selector():
