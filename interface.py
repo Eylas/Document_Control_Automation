@@ -113,13 +113,34 @@ class InterfaceApp(App):
 
     def add_note(self, renderable: RenderableType) -> None:
         self.query_one(TextLog).write(renderable)
+        # Add textLog wrap
 
     def compose(self) -> ComposeResult:
         yield Container(
             Sidebar(classes="-hidden"),
             Header(show_clock=False),
-            Options(),
-            TextLog()
+            Container(
+                Vertical(
+                    Title("Options"),
+                    Options(),
+                    id="left-pane",
+                ),
+                Horizontal(
+                    Static("Horizontally"),
+                    Static("Positioned"),
+                    Static("Children"),
+                    Static("Here"),
+                    id="top-right",
+                ),
+                Container(
+                    TextLog(),
+                    Static("Widget"),
+                    Static("Widget"),
+                    Static("Data table", id="bottom-right-final"),
+                    id="bottom-right",
+                ),
+                id="app-grid",
+            ),
         )
         yield Footer()
 
@@ -146,6 +167,9 @@ class InterfaceApp(App):
         self.app.add_note(f"Folder selected: {output}")
         self.app.add_note(f"Type is {type(output)}")
         return output
+
+    def on_mount(self) -> None:
+        self.add_note("NDX_Astraea: Welcome.")
 
 
 if __name__ == "__main__":
