@@ -73,6 +73,7 @@ Header {
 }
 
 #options>Button {
+    margin: 1;
     border: white;
     content-align: center middle;
     text-align: center;
