@@ -84,7 +84,12 @@ class Options(Container):
 
     def compose(self) -> ComposeResult:
         yield Button("Folder Location", id="event.button.folders")
-        yield Button("Select", id="event.button.metadata")
+        yield Button("Metadata upload", id="event.button.metadata")
+        yield Button("Regex Patterns", id="event.button.regex")
+        yield Input(placeholder="Enter Crop Location")
+        yield Button("Extraction test")
+        yield Button("Full extraction")
+        yield Button("Save user settings")
 
 
 class Progress(Container):
@@ -214,7 +219,7 @@ class InterfaceApp(App):
 
     def on_mount(self) -> None:
         self.add_note(
-            f"{Note_prefix.prefix} Hey and welcome! Please refer to the documentation on how to use the application.\n")
+            f"{Note_prefix.prefix}Hey and welcome! Please refer to the documentation on how to use the application.\n")
         self.add_note(
             f"{Note_prefix.prefix}If you have any queries, please feel free to reach out to me if they're not covered in the documentation.\n")
         table = self.query_one(DataTable)
