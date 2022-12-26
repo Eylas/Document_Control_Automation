@@ -5,6 +5,11 @@ from tkinter import ttk
 from tkinter import filedialog
 
 import time
+from time import monotonic
+
+import csv
+
+import os
 
 from importlib_metadata import version
 from pathlib import Path
@@ -111,6 +116,14 @@ class SavedTime(Container):
         yield Static("Time", classes="trackers")
         yield Static("Time", classes="trackers")
 
+# Reactive elements
+
+
+class FilesProcessed(Static):
+
+    def _on_mount(self) -> None:
+        self.set_interval()  # set this to be the processing variable
+
 # Button elements
 
 
@@ -139,6 +152,15 @@ def askdirectory():
     dirname = filedialog.askdirectory()
     (f"Folder selected: {dirname}")
     return dirname
+
+
+def get_file_paths(dir):
+    file_list = []
+    for path in os.listdir(dir):
+        full_path = os.path.join(dir, path)
+        if os.path.isfile(full_path):
+            file_list.append(full_path)
+    return file_list
 
 # Data Table
 
@@ -208,14 +230,15 @@ class InterfaceApp(App):
 
         if event.button.id == "event.button.folders":
             output = askdirectory()
-            self.app.add_note(f"Folder selected: {output}")
-            self.app.add_note(f"Type is {type(output)}")
-            return output
+            paths = get_file_paths(output)
+            self.app.add_note(f"{Note_prefix.prefix}Folder selected: {output}")
+            return [output, paths]
+
         elif event.button.id == "event.button.metadata":
+
             self.app.add_note(f"{Note_prefix.prefix}metadata")
         else:
-            self.app.add_note("Error")
-            self.app.add_note(f"{Note_prefix.prefix}")
+            self.app.add_note(f"{Note_prefix.prefix}Error")
 
     def on_mount(self) -> None:
         self.add_note(
