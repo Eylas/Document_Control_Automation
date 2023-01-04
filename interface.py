@@ -87,13 +87,25 @@ class Sidebar(Container):
 
 class Options(Container):
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "event.button.folders":
+            output = askdirectory()
+            paths = get_file_paths(output)
+            self.app.add_note(f"{Note_prefix.prefix}Folder selected: {output}")
+            self.app.add_note(f"{Note_prefix.prefix}Files selected:")
+            for path in paths:
+                self.app.add_note(f"{path}")
+            return [output, paths]
+        elif event.button.id == "event.button.metadata":
+            self.app.add_note(f"{Note_prefix.prefix}metadata")
+
     def compose(self) -> ComposeResult:
         yield Button("Folder Location", id="event.button.folders")
         yield Button("Metadata upload", id="event.button.metadata")
         yield Button("Regex Patterns", id="event.button.regex")
         yield Input(placeholder="Enter Crop Location")
         yield Button("Extraction test")
-        yield Button("Full extraction")
+        yield Button("Full extraction", id="event.button.start")
         yield Button("Save user settings")
 
 
@@ -106,23 +118,92 @@ class Progress(Container):
 class Metrics(Container):
 
     def compose(self) -> ComposeResult:
-        yield Static("Number of files to process")
-        yield Static("Someotherstuff")
+        yield Title("Number of files to process", id="Metrics_title")
+        yield ReactiveCounter(classes="Metrics_widget")
 
 
 class SavedTime(Container):
 
     def compose(self) -> ComposeResult:
-        yield Static("Time", classes="trackers")
-        yield Static("Time", classes="trackers")
+        yield ElapsedTime()
+
 
 # Reactive elements
 
 
-class FilesProcessed(Static):
+class ReactiveCounter(Static):
+    """ A widget to display the number of files to check/already checked"""
 
-    def _on_mount(self) -> None:
-        self.set_interval()  # set this to be the processing variable
+    def compose(self) -> ComposeResult:
+        yield Static("I am one", id="Reactive_Counter_1")
+        yield Static("I am two", id="Reactive_Counter_2")
+
+
+class TimeDisplay(Static):
+    """A widget to display elapsed time."""
+
+    start_time = reactive(monotonic)
+    time = reactive(0.0)
+    total = reactive(0.0)
+
+    def on_mount(self) -> None:
+        """Event handler called when widget is added to the app."""
+        self.update_timer = self.set_interval(
+            1 / 60, self.update_time, pause=True)
+
+    def update_time(self) -> None:
+        """Method to update time to current."""
+        self.time = self.total + (monotonic() - self.start_time)
+
+    def watch_time(self, time: float) -> None:
+        """Called when the time attribute changes."""
+        minutes, seconds = divmod(time, 60)
+        hours, minutes = divmod(minutes, 60)
+        self.update(f"{hours:02,.0f}:{minutes:02.0f}:{seconds:05.2f}")
+
+    def start(self) -> None:
+        """Method to start (or resume) time updating."""
+        self.start_time = monotonic()
+        self.update_timer.resume()
+
+    def stop(self):
+        """Method to stop the time display updating."""
+        self.update_timer.pause()
+        self.total += monotonic() - self.start_time
+        self.time = self.total
+
+    def reset(self):
+        """Method to reset the time display to zero."""
+        self.total = 0
+        self.time = 0
+
+
+class ElapsedTime(Static):
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Event handler called when a button is pressed."""
+        button_id = event.button.id
+        time_display = self.query_one(TimeDisplay)
+        if button_id == "event.button.start":
+            time_display.start()
+            self.add_class("started")
+        elif button_id == "event.button.stop":
+            time_display.stop()
+            self.remove_class("started")
+        elif button_id == "event.button.reset":
+            time_display.reset()
+
+    def compose(self) -> ComposeResult:
+        yield Title("Time Elapsed")
+        yield TimeDisplay()
+        yield Button("Stop", id="event.button.stop")
+        yield Button("Reset", id="event.button.reset")
+
+
+# class FilesProcessed(Static):
+
+#     def _on_mount(self) -> None:
+#         self.set_interval()  # set this to be the processing variable
 
 # Button elements
 
@@ -226,20 +307,6 @@ class InterfaceApp(App):
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-
-        if event.button.id == "event.button.folders":
-            output = askdirectory()
-            paths = get_file_paths(output)
-            self.app.add_note(f"{Note_prefix.prefix}Folder selected: {output}")
-            return [output, paths]
-
-        elif event.button.id == "event.button.metadata":
-
-            self.app.add_note(f"{Note_prefix.prefix}metadata")
-        else:
-            self.app.add_note(f"{Note_prefix.prefix}Error")
-
     def on_mount(self) -> None:
         self.add_note(
             f"{Note_prefix.prefix}Hey and welcome! Please refer to the documentation on how to use the application.\n")
@@ -255,6 +322,29 @@ class InterfaceApp(App):
         table.zebra_stripes = True
         for n in range(20):
             table.add_row(*[f"Cell ([b]{n}[/b], {col})" for col in range(6)])
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Event handler called when a button is pressed."""
+        button_id = event.button.id
+        time_display = self.query_one(TimeDisplay)
+        if button_id == "event.button.start":
+            time_display.start()
+            self.add_class("started")
+        elif button_id == "event.button.stop":
+            time_display.stop()
+            self.remove_class("started")
+        elif button_id == "event.button.reset":
+            time_display.reset()
+        elif button_id == "event.button.folders":
+            output = askdirectory()
+            paths = get_file_paths(output)
+            self.app.add_note(f"{Note_prefix.prefix}Folder selected: {output}")
+            self.app.add_note(f"{Note_prefix.prefix}Files selected:")
+            for path in paths:
+                self.app.add_note(f"{path}")
+            return [output, paths]
+        elif button_id == "event.button.metadata":
+            self.app.add_note(f"{Note_prefix.prefix}metadata")
 
 
 if __name__ == "__main__":

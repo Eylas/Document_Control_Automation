@@ -70,6 +70,7 @@ Header {
     column-span: 2;
     row-span: 2;
     content-align: center middle;
+
 }
 
 #options>Button {
@@ -106,11 +107,30 @@ Metrics {
     row-span: 2;
 }
 
+#Metrics_title {
+    height: 10%;
+}
 
-Metrics>Static {
-    height: 50%;
+.Metrics_widget {
+    height: 80%;
     text-align: center;
     content-align: center middle;
+}
+
+ReactiveCounter {
+    layout: horizontal;
+}
+
+#Reactive_Counter_1 {
+    background: red;
+    height: 45%;
+    width: 50%;
+}
+
+#Reactive_Counter_2 {
+    background: blue;
+    height: 45%;
+    width: 50%;
 }
 
 /* Progress */
@@ -143,12 +163,6 @@ SavedTime {
     row-span: 2;
 }
 
-
-SavedTime>Static {
-    height: 50%;
-    text-align: center;
-    content-align: center middle;
-}
 
 /* DataTable */
 
